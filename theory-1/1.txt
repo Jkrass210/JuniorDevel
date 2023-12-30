@@ -1,0 +1,27 @@
+Данный код выводит
+Bad: 10
+Bad: 12
+Good: 15
+Good: 21
+
+
+В качесте первого варианта предлагаю место цикла for использовать forEach:
+arr.forEach(element => {
+ setTimeout(function() {
+ console.log(element > 13 ? `Good: ${element}` : `Bad: ${element}`)
+ }, 3000)
+});
+
+
+
+В качестве второго предлагаю использовать функцию вывода значаний с интервалам 3 сек
+function process(index) {
+ setTimeout(function() {
+   console.log(arr[index] > 13 ? `Good: ${arr[index]}` : `Bad: ${arr[index]}`);
+   if (index < arr.length - 1) {
+     process(index + 1);
+   }
+ }, 3000);
+}
+
+process(0);
