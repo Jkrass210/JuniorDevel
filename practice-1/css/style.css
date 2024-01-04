@@ -261,7 +261,6 @@ overflow: hidden;
 
 .modal__item:first-child:hover > .modal__label::before {
   color: var(--color-gray-soft);
-  color: var(--color-white);
 }
 
 .modal__close {
