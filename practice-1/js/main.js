@@ -1,4 +1,5 @@
 //Кнопка вызова формы
+const form = document.querySelector('#form');
 const btnLog = document.querySelector('#btnLog');
 const overlay = document.querySelector(".overlay");
 const modal = document.querySelector('#modal')
@@ -35,6 +36,7 @@ btnLog.addEventListener('click', function() {
 
 document.addEventListener('keydown', function(event) {
  if (event.key === "Escape") {
+  form.scrollIntoView();
    closeOverlay()
    closeModal(modal)
  }
@@ -43,9 +45,18 @@ document.addEventListener('keydown', function(event) {
 const modalClose = document.querySelector('#modalClose');
 
 modalClose.addEventListener('click', function() {
+  form.scrollIntoView();
   closeOverlay()
   closeModal(modal)
 })
+
+document.addEventListener('click', function(event) {
+  if (!modal.contains(event.target) && !btnLog.contains(event.target)) {
+    form.scrollIntoView();
+    closeOverlay()
+    closeModal(modal)
+  }
+});
 //селект
 const dropdownBtn = document.querySelector('#dropdown');
 const dropdownList = document.querySelector('#dropdownList');
@@ -61,7 +72,7 @@ dropdownItem.forEach(function (listItem) {
   listItem.addEventListener('click', function(e) {
     e.stopPropagation();
     dropdownBtn.innerHTML = this.innerHTML;
-    dropdownBtn.style.border = "1px solid #D6DADE";
+    dropdownBtn.classList.remove('modal__input-error');
     dropdownInput.value = this.dataset.value;
     dropdownBtn.classList.remove('modal__dropdown-active')
     dropdownList.classList.remove('dropdown__list-activ')
@@ -122,70 +133,48 @@ const name = document.querySelector("#name");
 const tel = document.querySelector("#tel");
 const email = document.querySelector("#email");
 const submitBtn = document.querySelector("#submit");
-const form = document.querySelector('#form')
-let modalInputs = document.querySelectorAll(".modal__input")
+let modalInputs = document.querySelectorAll(".modal__input");
 
 let result = false;
-
-function resultFalse(idInput) {
-  idInput.style.border = "1px solid #D90000";
-  result = false;
-}
-
-function resultTrrue(idInput) {
-  idInput.style.border = "1px solid #D6DADE";
-  result = true;
-}
-
-function validation(idInput) {
-  let regex = /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
-  if (idInput === name) {
-   if (idInput.value.length < 2) {
-     resultFalse(idInput)
-   } else {
-     resultTrrue(idInput)
-   }
-  } else if (idInput === email) {
-   if (/^[^s@]+@[^s@]+\.[^s@]+$/.test(idInput.value)) {
-     resultTrrue(idInput)
-   } else {
-     resultFalse(idInput)
-   }
-  } else if (idInput === tel) {
-   if (!regex.test(idInput.value)) {
-    resultFalse(idInput)
-   } else {
-    resultTrrue(idInput)
-   }
-  }
-  return result;
-}
+let regex = /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
+let regexEmail = /^[^s@]+@[^s@]+\.[^s@]+$/;
 
 function allValid () {
-  pointsValid.forEach (function(point) {
-    validation(point)
-  })
-
-  if (dropdownBtn.innerHTML == "") {
-    dropdownBtn.style.border = "1px solid #D90000";
-    result = false;
+  if (name.value.length < 2 ||
+    !regexEmail.test(email.value) ||
+    !regex.test(tel.value) ||
+    dropdownBtn.innerHTML == "" ||
+    !labelImg.style.backgroundImage) {
+    result = false
   } else {
-    dropdownBtn.style.border = "1px solid #D6DADE";
-    result = true;
-  }
-
-  if (labelImg.style.backgroundImage) {
-    labelLogo.classList.remove('modal__label-error')
-    result = true;
-  } else {
-    labelLogo.classList.add('modal__label-error')
-    result = false;
+    result = true
   }
   return result
 }
 
-let pointsValid = [name, email, tel]
+let pointsValid = [name, email, tel, dropdownBtn, labelImg];
 
+function addStyleInput (input) {
+  if (input === name) {
+    if (input.value.length < 2) {
+     input.classList.add('modal__input-error')
+    } else {
+      input.classList.remove('modal__input-error')
+    }
+   } else if (input === email) {
+    if (regexEmail.test(input.value)) {
+      input.classList.remove('modal__input-error')
+    } else {
+     input.classList.add('modal__input-error')
+    }
+   } else if (input === tel) {
+    if (!regex.test(input.value)) {
+     input.classList.add('modal__input-error')
+    } else {
+     input.classList.remove('modal__input-error')
+    }
+   }
+}
 
 submitBtn.addEventListener('click', function(e) {
   e.preventDefault();
@@ -193,27 +182,22 @@ submitBtn.addEventListener('click', function(e) {
   if (result === false) {
     form.scrollIntoView();
     pointsValid.forEach (function(point) {
-      point.addEventListener('input', function() {
-        let regex = /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
-        if (point === name) {
-         if (point.value.length < 2) {
-          point.style.border = "1px solid #D90000";
-         } else {
-          point.style.border = "1px solid #D6DADE";
-         }
-        } else if (point === email) {
-         if (/^[^s@]+@[^s@]+\.[^s@]+$/.test(point.value)) {
-           point.style.border = "1px solid #D6DADE";
-         } else {
-          point.style.border = "1px solid #D90000";
-         }
-        } else if (point === tel) {
-         if (!regex.test(point.value)) {
-          point.style.border = "1px solid #D90000";
-         } else {
-          point.style.border = "1px solid #D6DADE";
-         }
+      addStyleInput(point);
+      if (point === dropdownBtn) {
+        if (dropdownBtn.innerHTML === "") {
+          dropdownBtn.classList.add('modal__input-error')
+        } else {
+          dropdownBtn.classList.remove('modal__input-error')
         }
+       } else if (point === labelImg) {
+        if (labelImg.style.backgroundImage) {
+          labelLogo.classList.remove('modal__label-error')
+        } else {
+          labelLogo.classList.add('modal__label-error')
+        }
+       }
+      point.addEventListener('input', function() {
+        addStyleInput(point);
       })
     })
   } else if (result === true) {
@@ -232,10 +216,14 @@ function cleanForm() {
   labelLogo.classList.remove('modal__label-hidden')
   labelLogo.classList.remove('modal__label-error')
   dropdownBtn.innerHTML = "";
-  dropdownBtn.style.border = "1px solid #D6DADE";
+  name.classList.remove('modal__input-error')
+  email.classList.remove('modal__input-error')
+  tel.classList.remove('modal__input-error')
+  dropdownBtn.classList.remove('modal__input-error')
   modalInputs.forEach(function(input) {
     input.value = "";
   })
+  form.scrollIntoView();
   result = false
 }
 
@@ -244,8 +232,3 @@ const reset = document.querySelector("#reset");
 reset.addEventListener('click', function() {
   cleanForm()
 })
-
-
-
-
-

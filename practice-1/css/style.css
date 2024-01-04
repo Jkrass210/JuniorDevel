@@ -482,6 +482,10 @@ overflow: hidden;
   transition: border 0.4s ease-in-out;
 }
 
+.modal__input-error {
+  border: 1px solid var(--color-red);
+}
+
 .modal__input:focus {
   outline: none;
 }
@@ -665,5 +669,3 @@ input:-internal-autofill-selected {
     font-size: 14px;
   }
 }
-
-
