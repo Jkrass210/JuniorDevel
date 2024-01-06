@@ -32,6 +32,7 @@ function closeOverlay() {
 btnLog.addEventListener('click', function() {
  openOverlay()
  openModal(modal)
+ format(tel);
 })
 
 document.addEventListener('keydown', function(event) {
@@ -225,10 +226,63 @@ function cleanForm() {
   })
   form.scrollIntoView();
   result = false
+  format(tel);
 }
 
 const reset = document.querySelector("#reset");
 
 reset.addEventListener('click', function() {
+  closeOverlay()
+  closeModal(modal)
   cleanForm()
+  format(tel);
 })
+//маска на телефон
+function doFormat(value, pattern, mask) {
+  const strippedValue = value.replace(/[^0-9]/g, "");
+  const chars = strippedValue.split('');
+
+  let count = 0;
+  let formatted = '';
+
+  for (let i = 0; i < pattern.length; i++) {
+    const char = pattern[i];
+    if (chars[count]) {
+      if (/\*/.test(char)) {
+        formatted += chars[count];
+        count++;
+      } else {
+        formatted += char;
+      }
+    } else if (mask) {
+      const splittedMask = mask.split('');
+      if (splittedMask[i]) {
+        formatted += splittedMask[i];
+      }
+    }
+  }
+  return formatted;
+}
+
+function format(elem) {
+  const val = doFormat(elem.value, elem.getAttribute('data-format'));
+  elem.value = doFormat(elem.value, elem.getAttribute('data-format'), elem.getAttribute('data-mask'));
+
+  if (elem.createTextRange) {
+    let range = elem.createTextRange();
+    range.move('character', val.length);
+    range.select();
+  } else if (elem.selectionStart) {
+    elem.setSelectionRange(val.length, val.length);
+  }
+}
+
+tel.addEventListener('keyup', function() {
+  format(tel);
+});
+
+tel.addEventListener('keydown', function() {
+  format(tel);
+});
+
+format(tel);
