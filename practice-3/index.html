@@ -34,8 +34,7 @@
   text-align: center;
  }
 
- .table__th:first-child,
- .table__th:nth-child(2) {
+ .table__th {
   cursor: pointer;
  }
 
@@ -48,10 +47,7 @@
  <table class="table">
   <caption class="table__caption">
    <form class="table__form" action="">
-    <input class="table__search" placeholder="search by userId" id="searchUserId">
-    <input class="table__search" placeholder="search by id" id="searchId">
-    <input class="table__search" placeholder="search by title" id="searchTitle">
-    <input class="table__search" placeholder="search by body" id="searchBody">
+    <input class="table__search" placeholder="search" id="searchAll">
    </form>
   </caption>
   <thead class="table__head">
@@ -62,10 +58,10 @@
     <th class="table__th unselectable" id="id">
      id
     </th>
-    <th class="table__th unselectable">
+    <th class="table__th unselectable" id="title">
      title
     </th>
-    <th class="table__th unselectable">
+    <th class="table__th unselectable" id="body">
      body
     </th>
    </tr>
@@ -121,8 +117,21 @@
    tableBody.append(...rowsArray)
   }
 
+  function sortTableText(colNum, dir) {
+  let rowsArray = Array.from(tableBody.rows);
+  rowsArray.sort(function (rowA, rowB) {
+    let textA = rowA.cells[colNum].innerText.trim().toLowerCase();
+    let textB = rowB.cells[colNum].innerText.trim().toLowerCase();
+    return dir ? textA.localeCompare(textB) : textB.localeCompare(textA);
+  });
+  tableBody.innerHTML = '';
+  rowsArray.forEach(row => tableBody.appendChild(row));
+  }
+
   const userId = document.querySelector('#userId');
   const id = document.querySelector('#id');
+  const title = document.querySelector('#title');
+  const body = document.querySelector('#body');
 
   userId.addEventListener('click', function(){
    sortTable(0, dir)
@@ -134,36 +143,33 @@
    dir = !dir;
   });
 
-  const searchUserId = document.querySelector('#searchUserId');
-  const searchId = document.querySelector('#searchId');
-  const searchTitle = document.querySelector('#searchTitle');
-  const searchBody = document.querySelector('#searchBody');
-  const allSearch = [searchUserId, searchId, searchTitle, searchBody]
+  title.addEventListener('click', function(){
+    sortTableText(2, dir)
+    dir = !dir;
+  })
 
-  function filter() {
-   allSearch.forEach(function(search) {
-    search.addEventListener('input', function(ev) {
-     let userId = searchUserId.value;
-     let id = searchId.value;
-     let title = searchTitle.value;
-     let body = searchBody.value;
+  body.addEventListener('click', function(){
+    sortTableText(3, dir)
+    dir = !dir;
+  })
 
-     for(let i = 0; i < tableBody.rows.length; i++) {
-      tableBody.rows[i].className = '';
-
-      if (
-       tableBody.rows[i].cells[0].innerHTML.indexOf(userId) == -1 ||
-       tableBody.rows[i].cells[1].innerHTML.indexOf(id) == -1 ||
-       tableBody.rows[i].cells[2].innerHTML.indexOf(title) == -1 ||
-       tableBody.rows[i].cells[3].innerHTML.indexOf(body) == -1
-      ) {
-       tableBody.rows[i].className = 'hide';
+  const searchAll = document.querySelector('#searchAll');
+ 
+  function filtrOne(search) {
+    let filterValue = search.value.toLowerCase();
+    for (let i = 0; i < tableBody.rows.length; i++) {
+      let row = tableBody.rows[i];
+      let rowText = row.innerText.toLowerCase();
+      if (rowText.includes(filterValue)) {
+        row.className = '';
+      } else {
+        row.className = 'hide';
       }
-     }
-    })
-   })
+    }
   }
-  filter();
+  searchAll.addEventListener('input', function(){
+    filtrOne(searchAll)
+  });
  </script>
 </body>
 </html>

@@ -101,26 +101,32 @@ const labelLogo = document.querySelector("#labelLogo");
 const drlLogo = document.querySelector("#drlLogo");
 
 logo.addEventListener("change", function () {
-  if (this.files[0]) {
-    let file = this.files[0];
-    let fileType = file.type;
-    let validExtensions = ["image/jpeg", "image/png"];
-
-    if (validExtensions.includes(fileType)) {
-      var fr = new FileReader();
-
-      fr.addEventListener("load", function () {
-        labelImg.style.backgroundImage = "url(" + fr.result + ")";
-        labelLogo.classList.add('modal__label-hidden')
-        labelLogo.classList.remove('modal__label-error')
-      }, false);
-
-      fr.readAsDataURL(file);
-    } else {
-      labelLogo.classList.add('modal__label-error')
-    }
-  }
+  uploadFile(logo.files[0]);
 });
+
+function uploadFile(file) {
+  if(!["image/jpeg", "image/jpg", "image/png"].includes(file.type)){
+    labelLogo.classList.add('modal__label-error');
+    logo.value = '';
+    return;
+  }
+  if(file.size > 2 * 1024 * 1024){
+    labelLogo.classList.add('modal__label-error');
+    logo.value = '';
+    return;
+  }
+  let addImg = new FileReader();
+  addImg.addEventListener('load', function(){
+    labelImg.style.backgroundImage = "url(" + addImg.result + ")";
+    labelLogo.classList.add('modal__label-hidden')
+    labelLogo.classList.remove('modal__label-error')
+  });
+  addImg.addEventListener('error', function(){
+    labelLogo.classList.add('modal__label-error');
+    logo.value = '';
+  });
+  addImg.readAsDataURL(file);
+}
 
 drlLogo.addEventListener('click', function() {
   if (labelImg.style.backgroundImage) { 

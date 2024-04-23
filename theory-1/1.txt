@@ -1,9 +1,9 @@
 Данный код выводит
-Bad: 10
-Bad: 12
-Good: 15
-Good: 21
-
+Bad: undefined
+Bad: undefined
+Bad: undefined
+Bad: undefined
+Не знаю специально допущена ошибка или нет, выводит undefined потому что var i используется внутри функции setTimeout, которая выполняется после того как цикл уже завершился
 
 В качесте первого варианта предлагаю место цикла for использовать forEach:
 arr.forEach(element => {
@@ -12,9 +12,7 @@ arr.forEach(element => {
  }, 3000)
 });
 
-
-
-В качестве второго предлагаю использовать функцию вывода значаний с интервалам 3 сек
+В качестве второго предлагаю использовать функцию вывода значаний с интервалам 3 сек, значения будут выводится пока в массиве не кончатся элементы
 function process(index) {
  setTimeout(function() {
    console.log(arr[index] > 13 ? `Good: ${arr[index]}` : `Bad: ${arr[index]}`);
@@ -23,5 +21,4 @@ function process(index) {
    }
  }, 3000);
 }
-
 process(0);
